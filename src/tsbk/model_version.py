@@ -10,6 +10,7 @@ from tsbk.testing import TritonModelVersionTestPlan
 from tsbk.utils import link_or_copy
 from tsbk.utils.dbx import download_mlflow_model, get_input_example_from_model
 from tsbk.utils.s3 import download_s3_path, s3_path_exists
+from tsbk.utils.trtexec import _find_onnx_file, build_trt_engine
 
 
 class TritonModelVersion:
@@ -19,6 +20,7 @@ class TritonModelVersion:
         python_model_file: str | None = None,
         version: int | None = None,
         test_cases: list[TestCase | dict] | None = None,
+        trt_compile: dict | None = None,
     ):
         """A Triton model version.
 
@@ -26,10 +28,12 @@ class TritonModelVersion:
             artifact_uri: The URI of the model artifact, which can be an MLflow model or an S3 object.
             python_model_file: The path to the Python model file, which is required for Python models.
             version: The version number of the model.
+            trt_compile: Configuration for compiling ONNX models to TensorRT engines.
         """
         self.artifact_uri = artifact_uri
         self.python_model_file = python_model_file
         self.version = version
+        self.trt_compile = trt_compile
         self.test_cases = test_cases or []
         self.test_cases = [
             TestCase(**test_case) if isinstance(test_case, dict) else test_case for test_case in self.test_cases
@@ -145,8 +149,32 @@ class TritonModelVersion:
                         copy_func(dst_path=output_file_path)
 
                 case "tensorrt":
-                    output_file_path = self.path.joinpath("model.plan").as_posix()
-                    copy_func(dst_path=output_file_path)
+                    if self.trt_compile and self.trt_compile.get("enabled"):
+                        # Get the ONNX model from cache (no copy into version dir)
+                        if source == "mlflow":
+                            cached_model = copy_func()
+                        else:
+                            cached_model = Path(self.artifact_uri)
+                            if not cached_model.exists():
+                                copy_func(dst_path=cached_model)
+
+                        # Find the .onnx file in the cached model and compile it
+                        onnx_path = _find_onnx_file(cached_model)
+                        plan_path = build_trt_engine(
+                            onnx_path=onnx_path,
+                            precision=self.trt_compile.get("precision"),
+                            workspace_size=self.trt_compile.get("workspace_size"),
+                            extra_args=self.trt_compile.get("extra_args"),
+                            trt_image=self.trt_compile.get("trt_image"),
+                            gpu_name=self.trt_compile.get("gpu_name"),
+                        )
+
+                        # Only place the compiled plan in the version directory
+                        link_or_copy(plan_path, self.path.joinpath("model.plan"))
+                    else:
+                        # Standard tensorrt: just copy the .plan file
+                        output_file_path = self.path.joinpath("model.plan").as_posix()
+                        copy_func(dst_path=output_file_path)
 
                 case _:
                     output_file_path = self.path.joinpath(self.artifact_uri.split("/")[-1])

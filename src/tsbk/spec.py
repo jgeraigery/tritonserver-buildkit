@@ -42,6 +42,23 @@ class TritonDTypeSpec(BaseModel):
     """The dimensions of the Triton data type, which can be used to specify the shape of the input or output tensors."""
 
 
+class TrtCompileSpec(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool = False
+    """Whether to compile ONNX models to TensorRT .plan files using trtexec."""
+    trt_image: str | None = None
+    """Override the TensorRT container image. Defaults to nvcr.io/nvidia/tensorrt:{triton_version}-py3."""
+    precision: str | None = None
+    """Precision mode for trtexec: 'fp16', 'int8', 'best', or None for default (fp32)."""
+    workspace_size: int | None = None
+    """Max workspace size in MB for trtexec."""
+    extra_args: str | None = None
+    """Additional raw trtexec CLI arguments as a string."""
+    gpu_name: str | None = None
+    """Target GPU architecture for compilation. Used as Karpenter node selector for K8s scheduling (e.g., 'A10G', 'T4')."""
+
+
 class TritonModelVersionSpec(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -53,6 +70,8 @@ class TritonModelVersionSpec(BaseModel):
     """The version number of the model"""
     test_cases: list[TestCaseSpec] | None = None
     """A list of test cases for the model version, which can be used to validate the model's behavior."""
+    trt_compile: TrtCompileSpec | None = None
+    """Configuration for compiling ONNX models to TensorRT engines during build."""
 
 
 class TritonModelSpec(BaseModel):
