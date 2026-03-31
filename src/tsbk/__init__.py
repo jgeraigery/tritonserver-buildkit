@@ -9,7 +9,7 @@ TSBK_S3_PREFIX = os.environ.get("TSBK_S3_PREFIX")
 TSBK_K8S_SERVICE_ACCOUNT = os.environ.get("TSBK_K8S_SERVICE_ACCOUNT", "default")
 
 # constants
-DEFAULT_TRITON_VERSION = "25.08"
+DEFAULT_TRITON_VERSION = "26.03"
 
 from .cli import tsbk
 from .model import TritonModel
