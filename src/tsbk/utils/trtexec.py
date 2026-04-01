@@ -28,6 +28,7 @@ def build_trt_engine(
     extra_args: str | None = None,
     trt_image: str | None = None,
     gpu_name: str | None = None,
+    instance_family: str | None = None,
     preferred_methods: Iterable[Literal["docker", "kubernetes"]] = ("docker", "kubernetes"),
 ) -> Path:
     """Compiles an ONNX model to a TensorRT engine plan file.
@@ -39,6 +40,7 @@ def build_trt_engine(
         extra_args: Additional raw trtexec CLI arguments
         trt_image: Override TensorRT container image
         gpu_name: Target GPU architecture for K8s scheduling (e.g., 'A10G', 'T4')
+        instance_family: AWS instance family for K8s scheduling via karpenter (e.g., 'g5', 'p4d')
         preferred_methods: Execution methods to try in order
 
     Returns:
@@ -50,7 +52,7 @@ def build_trt_engine(
 
     # Build cache key from ONNX content hash + compile params
     onnx_hash = hashlib.sha256(onnx_path.read_bytes()).hexdigest()[:16]
-    params_str = f"{precision or 'default'}-{workspace_size or 'default'}-{extra_args or ''}-{gpu_name or 'any'}-{arch}"
+    params_str = f"{precision or 'default'}-{workspace_size or 'default'}-{extra_args or ''}-{gpu_name or 'any'}-{instance_family or 'any'}-{arch}"
     params_hash = hashlib.sha256(params_str.encode()).hexdigest()[:8]
     cache_key = f"{onnx_hash}-{params_hash}"
 
@@ -91,6 +93,7 @@ def build_trt_engine(
                 extra_args=extra_args,
                 trt_image=trt_image,
                 gpu_name=gpu_name,
+                instance_family=instance_family,
                 k8s_shared_s3_path=s3_path,
                 k8s_service_account=TSBK_K8S_SERVICE_ACCOUNT,
             )
@@ -275,6 +278,7 @@ def _compile_kubernetes(
     extra_args: str | None = None,
     trt_image: str = DEFAULT_TRT_IMAGE,
     gpu_name: str | None = None,
+    instance_family: str | None = None,
     k8s_shared_s3_path: str,
     k8s_service_account: str = "default",
     **_,
@@ -311,6 +315,7 @@ def _compile_kubernetes(
         extra_args=extra_args,
         trt_image=trt_image,
         gpu_name=gpu_name,
+        instance_family=instance_family,
         service_account=k8s_service_account,
     )
 
@@ -390,6 +395,7 @@ def _create_trt_job_manifest(
     extra_args: str | None = None,
     trt_image: str = DEFAULT_TRT_IMAGE,
     gpu_name: str | None = None,
+    instance_family: str | None = None,
     cpu: str = "2",
     memory: str = "8Gi",
     memory_limit: str = "16Gi",
@@ -467,10 +473,13 @@ aws s3 cp /workspace/model.plan {s3_plan_path}
         },
     }
 
+    node_selector = {}
     if gpu_name:
-        job_manifest["spec"]["template"]["spec"]["nodeSelector"] = {
-            "karpenter.k8s.aws/instance-gpu-name": gpu_name.lower(),
-        }
+        node_selector["karpenter.k8s.aws/instance-gpu-name"] = gpu_name.lower()
+    if instance_family:
+        node_selector["karpenter.k8s.aws/instance-family"] = instance_family.lower()
+    if node_selector:
+        job_manifest["spec"]["template"]["spec"]["nodeSelector"] = node_selector
 
     return job_manifest
 

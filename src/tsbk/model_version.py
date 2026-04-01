@@ -167,6 +167,7 @@ class TritonModelVersion:
                             extra_args=self.trt_compile.get("extra_args"),
                             trt_image=self.trt_compile.get("trt_image"),
                             gpu_name=self.trt_compile.get("gpu_name"),
+                            instance_family=self.trt_compile.get("instance_family"),
                         )
 
                         # Only place the compiled plan in the version directory

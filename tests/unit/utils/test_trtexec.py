@@ -701,12 +701,12 @@ class TestCreateTrtJobManifest:
 
 
 class TestBuildTrtEngineCaching:
-    def _compute_cache_key(self, onnx_content, precision=None, workspace_size=None, extra_args=None, gpu_name=None):
+    def _compute_cache_key(
+        self, onnx_content, precision=None, workspace_size=None, extra_args=None, gpu_name=None, instance_family=None
+    ):
         arch = _platform.machine()
         onnx_hash = hashlib.sha256(onnx_content).hexdigest()[:16]
-        params_str = (
-            f"{precision or 'default'}-{workspace_size or 'default'}-{extra_args or ''}-{gpu_name or 'any'}-{arch}"
-        )
+        params_str = f"{precision or 'default'}-{workspace_size or 'default'}-{extra_args or ''}-{gpu_name or 'any'}-{instance_family or 'any'}-{arch}"
         params_hash = hashlib.sha256(params_str.encode()).hexdigest()[:8]
         return f"{onnx_hash}-{params_hash}"
 

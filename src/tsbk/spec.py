@@ -57,6 +57,8 @@ class TrtCompileSpec(BaseModel):
     """Additional raw trtexec CLI arguments as a string."""
     gpu_name: str | None = None
     """Target GPU architecture for compilation. Used as Karpenter node selector for K8s scheduling (e.g., 'A10G', 'T4')."""
+    instance_family: str | None = None
+    """AWS instance family for K8s scheduling via Karpenter (e.g., 'g5', 'p4d')."""
 
 
 class TritonModelVersionSpec(BaseModel):
