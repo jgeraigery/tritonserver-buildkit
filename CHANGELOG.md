@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.10.0-alpha.1+feature-trt-compiling (2026-04-01)
+
+### Features
+
+- Add support for compiling onnx models with trtexec
+  ([`0da4877`](https://github.com/wwgrainger/tritonserver-buildkit/commit/0da4877d2e132dc1f6131fd4a4dd142a24da25eb))
+
+
 ## v1.9.0 (2026-03-31)
 
 ### Bug Fixes
