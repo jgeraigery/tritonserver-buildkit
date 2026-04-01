@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.10.0 (2026-04-01)
+
+### Features
+
+- Add support for instance family for selecting trt exec node
+  ([`534790c`](https://github.com/wwgrainger/tritonserver-buildkit/commit/534790ca93a2ce67e213de186280c93520896fdb))
+
+
 ## v1.10.0-alpha.1+feature-trt-compiling (2026-04-01)
 
 ### Features
