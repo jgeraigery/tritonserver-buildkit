@@ -206,6 +206,19 @@ class TritonModel:
                 "Please specify a model backend via triton config or by passing the backend directly."
             )
 
+        # Override backend to tensorrt if any version has trt_compile enabled
+        has_trt_compile = any(
+            mv.trt_compile and mv.trt_compile.get("enabled")
+            for mv in self.versions
+            if hasattr(mv, "trt_compile") and mv.trt_compile
+        )
+        if has_trt_compile:
+            if self.backend not in ["tensorrt", "onnxruntime"]:
+                raise ValueError(
+                    "Must specify tensorrt or onnxruntime backend if trt_compile is enabled for any model version. "
+                )
+            self.backend = "tensorrt"
+
         if self.python_version and self.backend not in {"python", "mlflow"}:
             raise ValueError("python_version can only be specified for python models")
 
