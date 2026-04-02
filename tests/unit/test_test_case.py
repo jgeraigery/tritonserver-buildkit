@@ -34,3 +34,23 @@ def test_validate_output_fail(output, expected, allow_nan, allow_inf, rtol, atol
         TestCase.validate_output(
             output, expected, "test", allow_nan=allow_nan, allow_inf=allow_inf, rtol=rtol, atol=atol
         )
+
+
+def test_validate_output_relaxed_float_dtypes_allows_float_mismatch():
+    output = np.array([1.0], dtype=np.float16)
+    expected = np.array([1.0], dtype=np.float32)
+    TestCase.validate_output(output, expected, "test", relaxed_float_dtypes=True)
+
+
+def test_validate_output_relaxed_float_dtypes_false_rejects_float_mismatch():
+    output = np.array([1.0], dtype=np.float16)
+    expected = np.array([1.0], dtype=np.float32)
+    with pytest.raises(ValueError, match="incorrect dtype"):
+        TestCase.validate_output(output, expected, "test", relaxed_float_dtypes=False)
+
+
+def test_validate_output_relaxed_float_dtypes_rejects_non_float_mismatch():
+    output = np.array([1], dtype=np.int32)
+    expected = np.array([1.0], dtype=np.float32)
+    with pytest.raises(ValueError, match="incorrect dtype"):
+        TestCase.validate_output(output, expected, "test", relaxed_float_dtypes=True)

@@ -81,6 +81,10 @@ class TritonModelVersion:
             if input_example is not None:
                 self.test_cases.append(TestCase(inputs=input_example, expected_outputs={}))
 
+        if self.trt_compile and self.trt_compile.get("enabled"):
+            for test_case in self.test_cases:
+                test_case.relaxed_float_dtypes = True
+
         self._check_backend_or_platform()
         self._check_artifact_uri_or_python_model_file()
         self._check_python_model_file()

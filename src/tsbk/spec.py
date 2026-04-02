@@ -29,6 +29,8 @@ class TestCaseSpec(BaseModel):
     """The relative tolerance to use for comparing floating point values. This is used to determine if two floating point values are close enough to be considered equal."""
     atol: float = 1.0e-7
     """The absolute tolerance to use for comparing floating point values. This is used to determine if two floating point values are close enough to be considered equal."""
+    relaxed_float_dtypes: bool = False
+    """Whether to allow mismatches between floating-point dtypes (e.g. float16 vs float32). Useful when TensorRT compilation changes output precision."""
 
 
 class TritonDTypeSpec(BaseModel):
