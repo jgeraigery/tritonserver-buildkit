@@ -31,6 +31,7 @@ class TestCase:
         allow_inf: bool = False,
         rtol: float = 1.0e-5,
         atol: float = 1.0e-8,
+        relaxed_float_dtypes: bool = False,
     ):
         self.inputs = inputs
         for k, v in self.inputs.items():
@@ -50,6 +51,7 @@ class TestCase:
         self.allow_inf = allow_inf
         self.rtol = rtol
         self.atol = atol
+        self.relaxed_float_dtypes = relaxed_float_dtypes
 
     def run(self, model_client: TritonHttpModelClient | TritonGrpcModelClient, decoupled: bool = False) -> TestResult:
         try:
@@ -69,7 +71,16 @@ class TestCase:
                 )
             for tensor_name, output in outputs.items():
                 expected = self.expected_outputs.get(tensor_name)
-                self.validate_output(output, expected, tensor_name, self.allow_nan, self.allow_inf, self.rtol, self.atol)
+                self.validate_output(
+                    output,
+                    expected,
+                    tensor_name,
+                    self.allow_nan,
+                    self.allow_inf,
+                    self.rtol,
+                    self.atol,
+                    self.relaxed_float_dtypes,
+                )
         except Exception as e:
             return TestResult(
                 success=False,
@@ -95,6 +106,7 @@ class TestCase:
         allow_inf: bool = False,
         rtol: float = 1.0e-5,
         atol: float = 1.0e-8,
+        relaxed_float_dtypes: bool = False,
     ):
         """Standard function for validating model outputs. Raises a ValueError if the output is not as expected.
 
@@ -123,9 +135,16 @@ class TestCase:
                 )
 
             if output.dtype != expected.dtype:
-                raise ValueError(
-                    f"Output {tensor_name} has incorrect dtype. Expected {expected.dtype}, got {output.dtype}"
-                )
+                if (
+                    relaxed_float_dtypes
+                    and np.issubdtype(output.dtype, np.floating)
+                    and np.issubdtype(expected.dtype, np.floating)
+                ):
+                    expected = expected.astype(output.dtype)
+                else:
+                    raise ValueError(
+                        f"Output {tensor_name} has incorrect dtype. Expected {expected.dtype}, got {output.dtype}"
+                    )
 
             if output.dtype == object:
                 if not np.all(output == expected):
@@ -143,6 +162,7 @@ class TestCase:
             "allow_inf": self.allow_inf,
             "rtol": self.rtol,
             "atol": self.atol,
+            "relaxed_float_dtypes": self.relaxed_float_dtypes,
         }
 
     @classmethod
@@ -155,4 +175,5 @@ class TestCase:
             allow_inf=d.get("allow_inf", False),
             rtol=d.get("rtol", 1.0e-5),
             atol=d.get("atol", 1.0e-8),
+            relaxed_float_dtypes=d.get("relaxed_float_dtypes", False),
         )
