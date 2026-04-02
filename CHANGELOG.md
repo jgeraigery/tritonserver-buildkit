@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.10.1 (2026-04-02)
+
+### Bug Fixes
+
+- Allow for relaxed float dtypes for test cases for trt compiled models
+  ([`e5a4e90`](https://github.com/wwgrainger/tritonserver-buildkit/commit/e5a4e909894130032987bec9e746abfcbe26c6be))
+
+
 ## v1.10.0 (2026-04-01)
 
 ### Features
