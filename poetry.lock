@@ -1674,13 +1674,13 @@ numpy = "==1.*"
 
 [[package]]
 name = "mlflow-skinny"
-version = "2.22.2"
+version = "2.22.5"
 description = "MLflow is an open source platform for the complete machine learning lifecycle"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "mlflow_skinny-2.22.2-py3-none-any.whl", hash = "sha256:fefbe81d63a42daf0aba79678c37f3d1d0d8124a506df3c8bd248fa889fd61ba"},
-    {file = "mlflow_skinny-2.22.2.tar.gz", hash = "sha256:573e990ea5c572fb0d90cbbc77e5a1bf40b13bde9856685767b93c71c3d72a41"},
+    {file = "mlflow_skinny-2.22.5-py3-none-any.whl", hash = "sha256:c0e76ccd93f0ac97b0ed907ea7a404f1f53a260f52bf0b19425fc201c92b0188"},
+    {file = "mlflow_skinny-2.22.5.tar.gz", hash = "sha256:7aec51d79ae559c17bedec19005ed1293d9b56785b787a34c6e1fd6f755de0c4"},
 ]
 
 [package.dependencies]
