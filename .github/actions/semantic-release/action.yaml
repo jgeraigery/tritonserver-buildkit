@@ -44,7 +44,7 @@ runs:
         CONFIG_PATH="$(realpath $CONFIG_PATH)"
         echo "config-file=$CONFIG_PATH" >> $GITHUB_OUTPUT
 
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v7
       with:
         python-version: '3.11'
         cache: 'pip'
