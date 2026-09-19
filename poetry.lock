@@ -2528,6 +2528,17 @@ test = ["hypothesis (>=6.46.1)", "pytest (>=7.3.2)", "pytest-xdist (>=2.2.0)"]
 xml = ["lxml (>=4.9.2)"]
 
 [[package]]
+name = "perf-analyzer"
+version = "2.60.0"
+description = "Triton Performance Analyzer"
+optional = false
+python-versions = "*"
+files = [
+    {file = "perf_analyzer-2.60.0-py3-none-manylinux_2_38_aarch64.whl", hash = "sha256:c2ece0adb7760ea1abc258222d80bf8e367fa9639401406b96da2c9b55131d29"},
+    {file = "perf_analyzer-2.60.0-py3-none-manylinux_2_38_x86_64.whl", hash = "sha256:23ef56b107ae9233e5cf09fbdf508dd9b936a52f1bae2f63f53c8117087b3f25"},
+]
+
+[[package]]
 name = "pluggy"
 version = "1.6.0"
 description = "plugin and hook calling mechanisms for python"
@@ -3504,14 +3515,14 @@ numpy = ">=1.24.1,<2.0.0"
 
 [[package]]
 name = "tritonclient"
-version = "2.60.0"
+version = "2.61.0"
 description = "Python client library and utilities for communicating with Triton Inference Server"
 optional = false
 python-versions = "*"
 files = [
-    {file = "tritonclient-2.60.0-py3-none-any.whl", hash = "sha256:4953bcf0e30bdd2a63960ed5b37f3939df5d9416f0036d1eec0bcec4c42f8928"},
-    {file = "tritonclient-2.60.0-py3-none-manylinux1_x86_64.whl", hash = "sha256:778ef1561092be6b3ef65a4b0f2f3c641263703ac0f43ddf4a172c5a9bfb8cd7"},
-    {file = "tritonclient-2.60.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:0438157a940c549dd88e29eb37139cf8d90ee86bf8fb8f0b3568995edfbb7c4d"},
+    {file = "tritonclient-2.61.0-py3-none-any.whl", hash = "sha256:e86b47142d2ede7ba2ae566f631358f45d68f0d0ddea7ef93a35c138d570497b"},
+    {file = "tritonclient-2.61.0-py3-none-manylinux1_x86_64.whl", hash = "sha256:b7448d56ab9106152e4a700530984cefb024ffbf02b347aeb14108bedb9a51ec"},
+    {file = "tritonclient-2.61.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:f3d0866cfb49c9bb8fa0d3e9a32e7acf8eab098991a1ff3c72ded53ee47bd716"},
 ]
 
 [package.dependencies]
@@ -3520,6 +3531,7 @@ geventhttpclient = {version = ">=2.3.3", optional = true, markers = "extra == \"
 grpcio = {version = ">=1.63.0,<1.68", optional = true, markers = "extra == \"grpc\""}
 numpy = ">=1.19.1"
 packaging = {version = ">=14.1", optional = true, markers = "extra == \"grpc\""}
+perf-analyzer = "*"
 protobuf = {version = ">=5.26.1,<6.0dev", optional = true, markers = "extra == \"grpc\""}
 python-rapidjson = ">=0.9.1"
 urllib3 = ">=2.0.7"
@@ -3827,4 +3839,4 @@ testing = ["coverage[toml]", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11.0,<4.0"
-content-hash = "42bc237bbc2d75f2e510f4fb6347a52037a7be776b0521c5fd2455f602a0ad98"
+content-hash = "eae6e08cff43ede0ff5de85bf0b0859aa05f546d9344aae441363d34ae508117"
